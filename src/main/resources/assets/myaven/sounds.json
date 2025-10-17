@@ -1,0 +1,38 @@
+{
+  "rise.enable": {
+    "category": "player",
+    "sounds": [
+      "myaven:rise/enable"
+    ]
+  },
+  "rise.disable": {
+    "category": "player",
+    "sounds": [
+      "myaven:rise/disable"
+    ]
+  },
+  "sigma.enable": {
+    "category": "player",
+    "sounds": [
+      "myaven:sigma/enable"
+    ]
+  },
+  "sigma.disable": {
+    "category": "player",
+    "sounds": [
+      "myaven:sigma/disable"
+    ]
+  },
+  "quickmacro.enable": {
+    "category": "player",
+    "sounds": [
+      "myaven:quickmacro/enable"
+    ]
+  },
+  "quickmacro.disable": {
+    "category": "player",
+    "sounds": [
+      "myaven:quickmacro/disable"
+    ]
+  }
+}

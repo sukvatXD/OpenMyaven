@@ -1,0 +1,79 @@
+package Myaven.events;
+
+
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
+import net.minecraftforge.fml.common.eventhandler.Event;
+
+@Cancelable
+public class MoveInputEvent extends Event {
+   private float forward;
+   private float strafe;
+   private boolean jump;
+   private boolean sneak;
+   private double sneakSlowDown;
+
+   public MoveInputEvent(float forward, float strafe, boolean jump, boolean sneak, double sneakSlowDown) {
+      this.forward = forward;
+      this.strafe = strafe;
+      this.jump = jump;
+      this.sneak = sneak;
+      this.sneakSlowDown = sneakSlowDown;
+   }
+
+   public void B() {
+      this.setForward(0.0F);
+      this.setStrafe(0.0F);
+      this.setJump(false);
+      this.setSneak(false);
+   }
+
+   
+   public float getForward() {
+      return this.forward;
+   }
+
+   
+   public float getStrafe() {
+      return this.strafe;
+   }
+
+   
+   public boolean getJump() {
+      return this.jump;
+   }
+
+   
+   public boolean getSneak() {
+      return this.sneak;
+   }
+
+   
+   public double o() {
+      return this.sneakSlowDown;
+   }
+
+   
+   public void setForward(float forward) {
+      this.forward = forward;
+   }
+
+   
+   public void setStrafe(float strafe) {
+      this.strafe = strafe;
+   }
+
+   
+   public void setJump(boolean jump) {
+      this.jump = jump;
+   }
+
+   
+   public void setSneak(boolean sneak) {
+      this.sneak = sneak;
+   }
+
+   
+   public void setSneakSlowdown(double sneakSlowDown) {
+      this.sneakSlowDown = sneakSlowDown;
+   }
+}
