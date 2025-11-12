@@ -1,70 +1,45 @@
-name: Build Forge Mod 1.8.9
+name: Build Forge 1.8.9 Mod
 
 on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
-  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧩 Checkout source
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: ☕ Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '8'
+          java-version: 17
 
-      - name: ⚙️ Prepare Gradle
-        run: chmod +x ./gradlew
+      - name: Grant execute permission for Gradle
+        run: chmod +x gradlew
 
-      - name: 🏗️ Build with Gradle (log captured)
+      - name: Build mod
+        run: ./gradlew build --stacktrace
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Myaven-build
+          path: build/libs
+
+      - name: Save build log
         run: |
           mkdir -p logs
-          echo "=== BUILD START $(date) ===" > logs/build-log.txt
-          ./gradlew clean build --stacktrace --info >> logs/build-log.txt 2>&1 || true
-          echo "=== BUILD END $(date) ===" >> logs/build-log.txt
+          cp ~/.gradle/daemon/8.8/*.out.log logs/ || true
+          cp build/*.log logs/ || true
         continue-on-error: true
 
-      - name: 📦 Upload built mod
+      - name: Upload logs
         uses: actions/upload-artifact@v4
         with:
-          name: MyMod-jar
-          path: build/libs/*.jar
-
-      - name: 📜 Upload build log
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: logs/build-log.txt
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: MyMod-jar
-          path: ./artifacts
-      - uses: actions/download-artifact@v4
-        with:
-          name: build-log
-          path: ./logs
-      - name: 🚀 Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            ./artifacts/*.jar
-            ./logs/build-log.txt
-          body: |
-            ✅ **Forge 1.8.9 Mod Build Successful**
-            - Build time: ${{ github.run_id }}
-            - Commit: ${{ github.sha }}
-            - Author: ${{ github.actor }}
+          name: build-logs
+          path: logs/
