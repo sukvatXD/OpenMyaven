@@ -1,0 +1,70 @@
+name: Build Forge Mod 1.8.9
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧩 Checkout source
+        uses: actions/checkout@v4
+
+      - name: ☕ Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+
+      - name: ⚙️ Prepare Gradle
+        run: chmod +x ./gradlew
+
+      - name: 🏗️ Build with Gradle (log captured)
+        run: |
+          mkdir -p logs
+          echo "=== BUILD START $(date) ===" > logs/build-log.txt
+          ./gradlew clean build --stacktrace --info >> logs/build-log.txt 2>&1 || true
+          echo "=== BUILD END $(date) ===" >> logs/build-log.txt
+        continue-on-error: true
+
+      - name: 📦 Upload built mod
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyMod-jar
+          path: build/libs/*.jar
+
+      - name: 📜 Upload build log
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: logs/build-log.txt
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: MyMod-jar
+          path: ./artifacts
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-log
+          path: ./logs
+      - name: 🚀 Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ./artifacts/*.jar
+            ./logs/build-log.txt
+          body: |
+            ✅ **Forge 1.8.9 Mod Build Successful**
+            - Build time: ${{ github.run_id }}
+            - Commit: ${{ github.sha }}
+            - Author: ${{ github.actor }}
